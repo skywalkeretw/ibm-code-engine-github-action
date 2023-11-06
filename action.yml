@@ -1,0 +1,79 @@
+name: Skywalker_etw Code Engine Deploy
+description: Unofficial Github action to deploy Apps, Jobs and Functions to IBM Cloud Code Engine
+author: Skywalker_etw
+
+branding:
+  icon: cloud
+  color: blue
+
+inputs:
+  api-key:
+    description: IAM API Key used to log into the IBM Cloud
+    required: true
+
+  resouce-groupe:
+    description: An IBM Cloud Resource Group is a logical container used to organize and manage related cloud resources
+    required: false
+    default: Default
+
+  region:
+    description: The Region refers to a geographical area where the project is are located
+    required: true
+
+  project:
+    description: A Code Engine Project Is the grouping of your Apps, Functions and Jobs
+    required: true
+
+# App, Function or Job Specific inputs
+  entity:
+    description: The type of entity that should be deployed [App, Function, Job]
+    required: true
+
+  name: 
+    description: Name of the App, Function or Job
+    required: true
+  
+  runtime:
+    description: Runtime used for the Function
+    required: true
+
+  build-source:
+    description: path to the directory containing the source code 
+    required: false
+    default: .
+
+runs:
+  using: composite
+  steps:
+    
+    - name: Install IBM Cloud CLI
+      shell: bash
+      run: curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+    
+    - name: Login to IBM Cloud
+      shell: bash
+      run: ibmcloud login --apikey ${{ inputs.api-key }}
+
+    - name: Install Code Engine Plugin
+      shell: bash
+      run: ibmcloud plugin install code-engine
+
+    - name: Target Resouce Groupe and Region 
+      shell: bash
+      run: ibmcloud target -r ${{ secrets.IBMCLOUD_REGION }} -g ${{ secrets.IBMCLOUD_RESOURCE }}
+
+    - name: Select Code Engine Project
+      shell: bash
+      run: ibmcloud ce project select --name ${{ project }}
+
+    - name: Deploy Functions
+      shell: bash
+      if: inputs.entity == 'function' || inputs.entity == 'func'
+      run: |
+        ibmcloud ce fn create --name ${{ name }} --runtime ${{ runtime }} --build-source ${{ build-source }}
+
+    - name: Deploy App
+      shell: bash
+      if: inputs.entity == 'application' || inputs.entity == 'app'
+      run: |
+        ibmcloud ce application create --name ${{ name }} --build-source ${{ build-source }}
