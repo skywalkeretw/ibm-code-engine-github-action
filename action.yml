@@ -50,17 +50,13 @@ runs:
       shell: bash
       run: curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
     
-    - name: Login to IBM Cloud
+    - name: Login to IBM Cloud And target Resouce Groupe and Region
       shell: bash
-      run: ibmcloud login --apikey ${{ inputs.api-key }}
+      run: ibmcloud login --apikey ${{ inputs.api-key }} -r ${{ inputs.region }} -g ${{ inputs.resouce-groupe }}
 
     - name: Install Code Engine Plugin
       shell: bash
       run: ibmcloud plugin install code-engine
-
-    - name: Target Resouce Groupe and Region 
-      shell: bash
-      run: ibmcloud target -r ${{ inputs.region }} -g ${{ inputs.resouce-groupe }}
 
     - name: Select Code Engine Project
       shell: bash
