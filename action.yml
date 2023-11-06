@@ -45,7 +45,7 @@ inputs:
 runs:
   using: composite
   steps:
-    
+    # Default steps required
     - name: Install IBM Cloud CLI
       shell: bash
       run: curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
@@ -60,20 +60,22 @@ runs:
 
     - name: Target Resouce Groupe and Region 
       shell: bash
-      run: ibmcloud target -r ${{ secrets.IBMCLOUD_REGION }} -g ${{ secrets.IBMCLOUD_RESOURCE }}
+      run: ibmcloud target -r ${{ inputs.region }} -g ${{ inputs.resouce-groupe }}
 
     - name: Select Code Engine Project
       shell: bash
-      run: ibmcloud ce project select --name ${{ project }}
+      run: ibmcloud ce project select --name ${{ inputs.project }}
 
+    # Functions Steps
     - name: Deploy Functions
       shell: bash
       if: inputs.entity == 'function' || inputs.entity == 'func'
       run: |
-        ibmcloud ce fn create --name ${{ name }} --runtime ${{ runtime }} --build-source ${{ build-source }}
+        ibmcloud ce fn create --name ${{ inputs.name }} --runtime ${{ inputs.runtime }} --build-source ${{ inputs.build-source }}
 
+    # Application Steps
     - name: Deploy App
       shell: bash
       if: inputs.entity == 'application' || inputs.entity == 'app'
       run: |
-        ibmcloud ce application create --name ${{ name }} --build-source ${{ build-source }}
+        ibmcloud ce application create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }}
