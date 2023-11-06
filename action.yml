@@ -1,5 +1,5 @@
-name: Skywalker_etw Code Engine Deploy
-description: Unofficial Github action to deploy Apps, Jobs and Functions to IBM Cloud Code Engine
+name: Code Engine Deploy
+description: Github action to deploy Apps, Jobs and Functions to IBM Cloud Code Engine
 author: Skywalker_etw
 
 branding:
