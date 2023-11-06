@@ -34,7 +34,7 @@ inputs:
     required: true
   
   runtime:
-    description: Runtime used for the Function
+    description: Runtime used for the Function only required for function
     required: true
 
   build-source:
@@ -63,15 +63,44 @@ runs:
       run: ibmcloud ce project select --name ${{ inputs.project }}
 
     # Functions Steps
-    - name: Deploy Functions
+    - name: Create Functions
       shell: bash
+      id: function-create
       if: inputs.entity == 'function' || inputs.entity == 'func'
       run: |
         ibmcloud ce fn create --name ${{ inputs.name }} --runtime ${{ inputs.runtime }} --build-source ${{ inputs.build-source }}
+    
+    - name: Update Functions
+      shell: bash
+      if: steps.function-create.outcome == 'failure'
+      run: |
+        ibmcloud ce fn update --name ${{ inputs.name }} --runtime ${{ inputs.runtime }} --build-source ${{ inputs.build-source }}
 
     # Application Steps
-    - name: Deploy App
+    - name: Create Application
       shell: bash
+      id: create-app
       if: inputs.entity == 'application' || inputs.entity == 'app'
       run: |
         ibmcloud ce application create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }}
+
+    - name: Deploy App
+      shell: bash
+      if: steps.create-app.outcome == 'failure'
+      run: |
+        ibmcloud ce application update --name ${{ inputs.name }} --build-source ${{ inputs.build-source }}
+
+    # Job Steps
+    - name: Create Application
+      shell: bash
+      id: create-job
+      if: inputs.entity == 'job' 
+      run: |
+        ibmcloud ce job create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait
+
+    - name: Deploy App
+      shell: bash
+      if: steps.create-app.outcome == 'failure'
+      run: |
+        ibmcloud ce job create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait
+   
