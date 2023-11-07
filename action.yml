@@ -41,6 +41,21 @@ inputs:
     description: path to the directory containing the source code 
     required: false
     default: .
+
+# Configmap and Secrets
+  configmap:
+    description: Name of the configmap that should be created or updated
+
+  configmap-env-file:
+    description: Specify the path to a file or files to read lines of key=val pairs
+
+  configmap-file:
+    description: Set a key from a file. The format must be FILE or KEY=/path/to/file.
+
+  configmap-literal:
+    description: Set key value pairs key=value
+
+
 # actual action code 
 runs:
   using: composite
@@ -58,12 +73,61 @@ runs:
       shell: bash
       run: ibmcloud plugin install code-engine
 
+    # Select the project using Name or ID
+    # If the project doesn`t exist the project is created with the provided Name
     - name: Select Code Engine Project
       shell: bash
-      run: ibmcloud ce project select --name ${{ inputs.project }}
+      run: | 
+        if ibmcloud ce project select --name ${{ inputs.project }} || ibmcloud ce project select --id ${{ inputs.project }} ; then
+          echo "Project Selected"
+        else
+          ibmcloud ce project create --name ${{ inputs.project }}
+        fi
+
+    # Configmap
+    - name: Create or Update Configmap
+      shell: bash
+      if: inputs.
+      run: |
+        FROM-ENV-FILE=""
+        FROM-FILE=""
+        FROM-LITERAL=""
+        
+        if [[ -n ${{ inputs.configmap-env-file }} || -n ${{ inputs.configmap-file }} || -n ${{ inputs.configmap-literal }} ]] ; then
+          
+          IFS=$'\n' # Set the Internal Field Separator to newline
+
+          IN_ENV_FILE_VALUES=(${{ inputs.in }}) # Split input values by newline
+          for ENVFILE in "${IN_ENV_FILE_VALUES[@]}"; do
+            FROM-ENV-FILE="${FROM-ENV-FILE} --from-env-file ${ENVFILE}"
+          done
+
+          IN_FILE_VALUES=(${{ inputs.in }}) # Split input values by newline
+          for FILE in "${IN_FILE_VALUES[@]}"; do
+
+            FROM-FILE="${FROM-FILE} --from-file ${FILE}"
+          done
+
+          IN_LITERAL_VALUES=(${{ inputs.in }}) # Split input values by newline
+          for ENVFILE in "${INPUT_VALUES[@]}"; do
+
+            FROM-LITERAL="${IN_LITERAL_VALUES} --from-literal ${ENVFILE}"
+          done
+
+        else
+          echo "Nothing passed so nothing to fail"
+          exit 0
+        fi
+
+        # check if config map exists if so update else create new one 
+        if ibmcloud ce cm get --name ${{ inputs.configmap }} ; then
+          ibmcloud ce cm update --name ${{ inputs.configmap }} $FROM-ENV-FILE $FROM-FILE $FROM-LITERAL
+        else
+          ibmcloud ce cm create --name ${{ inputs.configmap }} $FROM-ENV-FILE $FROM-FILE $FROM-LITERAL
+        fi
 
     # Functions Steps
-    - name: Create Functions
+    - name: Create or Update Functions
       shell: bash
       id: fn-create
       if: inputs.entity == 'function' || inputs.entity == 'func' || inputs.entity == 'fn'
@@ -98,25 +162,23 @@ runs:
           ibmcloud ce job update --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait
         fi
     
-    - name: Return 
+    - name: Get enity 
       shell: bash
       if: steps.fn-create.outcome == 'success' || steps.app-create.outcome == 'success' || steps.job-create.outcome == 'success'
       run: |
-
         case ${{ inputs.entity }} in
             function|func|fn)
                 ibmcloud ce fn get --name ${{ inputs.name }}
-                # Add your code for option A here
                 ;;
             application|app)
                 ibmcloud ce app get --name ${{ inputs.name }}
-                # Add your code for option B here
                 ;;
             job)
                 ibmcloud ce job get --name ${{ inputs.name }}
-                # Add your code for option C here
                 ;;
             *)
+                echo "Wrong Code Engine Entity used!"
+                echo "Use[ function | func | fn | application | app | job ]"
                 exit 1
                 ;;
         esac
