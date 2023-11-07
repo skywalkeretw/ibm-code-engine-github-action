@@ -41,7 +41,7 @@ inputs:
     description: path to the directory containing the source code 
     required: false
     default: .
-
+# actual action code 
 runs:
   using: composite
   steps:
@@ -65,10 +65,14 @@ runs:
     # Functions Steps
     - name: Create Functions
       shell: bash
-      id: function-create
-      if: inputs.entity == 'function' || inputs.entity == 'func'
+      id: fn-create
+      if: inputs.entity == 'function' || inputs.entity == 'func' || inputs.entity == 'fn'
       run: |
-        ibmcloud ce fn create --name ${{ inputs.name }} --runtime ${{ inputs.runtime }} --build-source ${{ inputs.build-source }} || ibmcloud ce fn update --name ${{ inputs.name }} --runtime ${{ inputs.runtime }} --build-source ${{ inputs.build-source }}      
+        if ibmcloud ce fn create --name ${{ inputs.name }} --runtime ${{ inputs.runtime }} --build-source ${{ inputs.build-source }} ; then
+          echo "Function: ${{ inputs.name }} created"
+        else
+          ibmcloud ce fn update --name ${{ inputs.name }} --runtime ${{ inputs.runtime }} --build-source ${{ inputs.build-source }}
+        fi
 
     # Application Steps
     - name: Create or Update Application
@@ -76,7 +80,11 @@ runs:
       id: create-app
       if: inputs.entity == 'application' || inputs.entity == 'app'
       run: |
-        ibmcloud ce application create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} || ibmcloud ce application update --name ${{ inputs.name }} --build-source ${{ inputs.build-source }}
+        if ibmcloud ce application create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} ; then
+          echo "Application: ${{ inputs.name }} created"
+        else
+          ibmcloud ce application update --name ${{ inputs.name }} --build-source ${{ inputs.build-source }}
+        fi
 
     # Job Steps
     - name: Create or Update Job
@@ -84,4 +92,31 @@ runs:
       id: create-job
       if: inputs.entity == 'job' 
       run: |
-        ibmcloud ce job create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait || ibmcloud ce job create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait
+        if ibmcloud ce job create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait ; then
+          echo "Job: ${{ inputs.name }} created"
+        else
+          ibmcloud ce job updated --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait
+        fi
+    
+    - name: Return 
+      shell: bash
+      if: steps.fn-create.outcome == 'success' || steps.app-create.outcome == 'success' || steps.job-create.outcome == 'success'
+      run: |
+
+        case ${{ inputs.entity }} in
+            function|func|fn)
+                ibmcloud ce fn get --name ${{ inputs.name }}
+                # Add your code for option A here
+                ;;
+            application|app)
+                ibmcloud ce app get --name ${{ inputs.name }}
+                # Add your code for option B here
+                ;;
+            job)
+                ibmcloud ce job get --name ${{ inputs.name }}
+                # Add your code for option C here
+                ;;
+            *)
+                exit 1
+                ;;
+        esac
