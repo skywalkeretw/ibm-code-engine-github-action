@@ -95,7 +95,7 @@ runs:
         if ibmcloud ce job create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait ; then
           echo "Job: ${{ inputs.name }} created"
         else
-          ibmcloud ce job updated --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait
+          ibmcloud ce job update --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait
         fi
     
     - name: Return 
