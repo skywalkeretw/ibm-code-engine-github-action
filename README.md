@@ -14,8 +14,21 @@ This action allows you to deploy Apps, Functions, and Jobs to IBM Cloud Code Eng
 - `project` (required): A Code Engine Project, grouping your Apps, Functions, and Jobs.
 - `entity` (required): The type of entity to deploy (App, Function, Job).
 - `name` (required): The name of the App, Function, or Job.
-- `runtime` (required for Function): The runtime used for the Function.
+- `runtime` (required for Function): The runtime used for the Function. Currently supported `nodejs-18` and `python-3.11` see [IBM Code Engine Function Runtimes](https://cloud.ibm.com/docs/codeengine?topic=codeengine-fun-runtime) for more information.
 - `build-source` (optional, default: .): Path to the directory containing the source code.
+
+Additionally, this action provides options for creating and updating ConfigMaps with the following input parameters:
+
+- `configmap` (optional): The name of the ConfigMap to create or update.
+- `configmap-env-file` (optional): Specify the path to a file or files to read lines of key=val pairs for the ConfigMap.
+- `configmap-file` (optional): Set a key from a file. The format must be FILE or KEY=/path/to/file.
+- `configmap-literal` (optional): Set key-value pairs for the ConfigMap.
+
+The action handles the creation and updating of ConfigMaps based on the provided input parameters. It checks if any of the `configmap-env-file`, `configmap-file`, or `configmap-literal` inputs are set. If any of these inputs are set, it constructs the appropriate `--from-env-file`, `--from-file`, or `--from-literal` arguments for creating or updating the ConfigMap.
+
+The action checks if the ConfigMap with the provided name already exists. If it exists, it updates the ConfigMap; otherwise, it creates a new one.
+
+
 
 ## Usage
 To use this action, add it to your GitHub Actions workflow YAML file. For example:
@@ -35,7 +48,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Deploy to Code Engine
-      uses: Skywalker_etw/code-engine-deploy-action@betav1
+      uses: Skywalker_etw/code-engine-deploy-action@v1
       with:
         api-key: ${{ secrets.IBM_CLOUD_API_KEY }}
         resouce-groupe: 'Default'
@@ -46,4 +59,33 @@ jobs:
         build-source: 'path/to/source'
 ```
 
+Here is also an example how to create a configmap. `configmap-env-file`, `configmap-file` and `configmap-literal` can all take multiple values  using the described notation in the example
+```yaml
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Code Engine
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Deploy to Code Engine
+      uses: Skywalker_etw/code-engine-deploy-action@v1
+      with:
+        api-key: ${{ secrets.IBM_CLOUD_API_KEY }}
+        resouce-groupe: 'Default'
+        region: 'us-south'
+        project: 'my-code-engine-project'
+        entity: 'app'
+        name: 'my-app-name'
+        build-source: 'path/to/source'
+        configmap: |
+                'my-key-1=my-value-1'
+                'my-key-2=my-value-2'
+```
 This action is not officially endorsed by IBM Cloud but can be used as a community-contributed GitHub Action.
