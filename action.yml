@@ -42,15 +42,6 @@ inputs:
     required: false
     default: .
 
-  memory:
-    description: Memory used for your App, Function or Job default is the value as described in the Code Engine Docs
-    required: false
-
-  cpu:
-    description: CPU used for your App, Function or Job default is the value as described in the Code Engine Docs
-    required: false
-
-
 # actual action code 
 runs:
   using: composite
@@ -79,24 +70,6 @@ runs:
         else
           ibmcloud ce project create --name ${{ inputs.project }}
         fi
-
-    # entitys
-    - name: Set CPU and Memory values
-      shell: bash
-      id: resources
-      run: |
-        CPU_STRING=""
-        if [[ ${{ inputs.cpu }} != '' ]]; then
-          CPU_STRING="--cpu ${{ inputs.cpu }}"
-        fi
-
-        MEMORY_STRING=""
-        if [[ ${{ inputs.memory }} != '' ]]; then
-          MEMORY_STRING="--memory ${{ inputs.memory }}"
-        fi
-
-        echo "cpu=$CPU_STRING" >> "$GITHUB_OUTPUT"
-        echo "memory=$MEMORY_STRING" >> "$GITHUB_OUTPUT"
 
     # Functions Steps
     - name: Create or Update Functions
