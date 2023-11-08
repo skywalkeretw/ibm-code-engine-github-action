@@ -95,8 +95,7 @@ runs:
 
     # Configmap
     - name: Create or Update Configmap
-      shell: bash
-      if: inputs.
+      shell: bash 
       run: |
         FROM-ENV-FILE=""
         FROM-FILE=""
