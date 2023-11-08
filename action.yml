@@ -102,7 +102,7 @@ runs:
     - name: Create or Update Functions
       shell: bash
       id: fn-create
-      if: inputs.entity == 'function' || inputs.entity == 'func' || inputs.entity == 'fn' || steps.resources.outcome == 'success'
+      if: ( inputs.entity == 'function' || inputs.entity == 'func' || inputs.entity == 'fn' ) && steps.resources.outcome == 'success'
       run: |
 
         if ibmcloud ce fn get --name ${{ inputs.name }} ; then
@@ -115,7 +115,7 @@ runs:
     - name: Create or Update Application
       shell: bash
       id: create-app
-      if: inputs.entity == 'application' || inputs.entity == 'app' || steps.resources.outcome == 'success'
+      if: ( inputs.entity == 'application' || inputs.entity == 'app' ) && steps.resources.outcome == 'success'
       run: |
 
         if ibmcloud ce application get --name ${{ inputs.name }} ; then
@@ -128,7 +128,7 @@ runs:
     - name: Create or Update Job
       shell: bash
       id: create-job
-      if: inputs.entity == 'job' || steps.resources.outcome == 'success'
+      if: inputs.entity == 'job' && steps.resources.outcome == 'success'
       run: |
 
         if ibmcloud ce job get --name ${{ inputs.name }} --wait ; then
