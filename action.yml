@@ -100,10 +100,11 @@ runs:
         FROM-ENV-FILE=""
         FROM-FILE=""
         FROM-LITERAL=""
+
         IFS=$'\n' # Set the Internal Field Separator to newline
         FAIL_COUNT=0
         
-        if [[ -n ${{ inputs.configmap-env-file }} || ]] ; then
+        if [[ -n ${{ inputs.configmap-env-file }} || ${{ inputs.configmap-env-file }} != "" ]] ; then
           IN_ENV_FILE_VALUES=(${{ inputs.configmap-env-file }}) # Split input values by newline
           for ENVFILE in "${IN_ENV_FILE_VALUES[@]}"; do
             FROM-ENV-FILE="${FROM-ENV-FILE} --from-env-file ${ENVFILE}"
