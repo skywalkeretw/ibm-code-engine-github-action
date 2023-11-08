@@ -97,9 +97,9 @@ runs:
     - name: Create or Update Configmap
       shell: bash 
       run: |
-        FROM-ENV-FILE=""
-        FROM-FILE=""
-        FROM-LITERAL=""
+        export FROM-ENV-FILE=""
+        export FROM-FILE=""
+        export FROM-LITERAL=""
 
         IFS=$'\n' # Set the Internal Field Separator to newline
         FAIL_COUNT=0
