@@ -97,17 +97,18 @@ runs:
     - name: Create or Update Configmap
       shell: bash 
       run: |
-        export FROM-ENV-FILE=""
-        export FROM-FILE=""
-        export FROM-LITERAL=""
+        FROM-ENV-FILE=""
+        FROM-FILE=""
+        FROM-LITERAL=""
 
         IFS=$'\n' # Set the Internal Field Separator to newline
         FAIL_COUNT=0
+        echo "Setting Values"
         
         if [[ -n ${{ inputs.configmap-env-file }} || ${{ inputs.configmap-env-file }} != "" ]] ; then
           IN_ENV_FILE_VALUES=(${{ inputs.configmap-env-file }}) # Split input values by newline
           for ENVFILE in "${IN_ENV_FILE_VALUES[@]}"; do
-            FROM-ENV-FILE="${FROM-ENV-FILE} --from-env-file ${ENVFILE}"
+            FROM-ENV-FILE=${FROM-ENV-FILE} --from-env-file ${ENVFILE}
           done
         else
           ((FAIL_COUNT++))
