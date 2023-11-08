@@ -50,19 +50,6 @@ inputs:
     description: CPU used for your App, Function or Job default is the value as described in the Code Engine Docs
     required: false
 
-# Configmap and Secrets
-  configmap:
-    description: Name of the configmap that should be created or updated
-
-  configmap-env-file:
-    description: Specify the path to a file or files to read lines of key=val pairs
-
-  configmap-file:
-    description: Set a key from a file. The format must be FILE or KEY=/path/to/file.
-
-  configmap-literal:
-    description: Set key value pairs key=value
-
 
 # actual action code 
 runs:
@@ -93,70 +80,18 @@ runs:
           ibmcloud ce project create --name ${{ inputs.project }}
         fi
 
-    # Configmap
-    - name: Create or Update Configmap
-      shell: bash 
-      run: |
-        FROM-ENV-FILE=""
-        FROM-FILE=""
-        FROM-LITERAL=""
-
-        IFS=$'\n' # Set the Internal Field Separator to newline
-        FAIL_COUNT=0
-        echo "Setting Values"
-        
-        if [[ -n ${{ inputs.configmap-env-file }} || ${{ inputs.configmap-env-file }} != "" ]] ; then
-          IN_ENV_FILE_VALUES=(${{ inputs.configmap-env-file }}) # Split input values by newline
-          for ENVFILE in "${IN_ENV_FILE_VALUES[@]}"; do
-            FROM-ENV-FILE=${FROM-ENV-FILE} --from-env-file ${ENVFILE}
-          done
-        else
-          ((FAIL_COUNT++))
-        fi
-        
-        if [[ -n ${{ inputs.configmap-file }} || "${{ inputs.configmap-file }}" != "" ]]; then
-          IN_FILE_VALUES=(${{ inputs.configmap-file }}) # Split input values by newline
-          for FILE in "${IN_FILE_VALUES[@]}"; do
-            FROM-FILE="${FROM-FILE} --from-file ${FILE}"
-          done
-        else
-          ((FAIL_COUNT++))
-        fi
-
-        if [[ -n ${{ inputs.literal }} || "${{ inputs.literal }}" != "" ]]; then
-          IN_LITERAL_VALUES=(${{ inputs.literal }}) # Split input values by newline
-          for LITERAL in "${IN_LITERAL_VALUES[@]}"; do
-            FROM-LITERAL="${FROM-LITERAL} --from-literal ${LITERAL}"
-          done
-        else
-          ((FAIL_COUNT++))
-        fi
-
-         
-        # check if config map exists if so update else create new one
-
-        if [ "$counter" -lt 3 ]; then
-          if ibmcloud ce cm get --name ${{ inputs.configmap }} ; then
-            ibmcloud ce cm update --name ${{ inputs.configmap }} $FROM-ENV-FILE $FROM-FILE $FROM-LITERAL
-          else
-            ibmcloud ce cm create --name ${{ inputs.configmap }} $FROM-ENV-FILE $FROM-FILE $FROM-LITERAL
-          fi
-        else
-          echo "No values set set"
-        fi
-
     # entitys
     - name: Set CPU and Memory values
       shell: bash
       id: resources
       run: |
         CPU_STRING=""
-        if [[ -n ${{ inputs.cpu }} ]]; then
+        if [[ ${{ inputs.cpu }} != '' ]]; then
           CPU_STRING="--cpu ${{ inputs.cpu }}"
         fi
 
         MEMORY_STRING=""
-        if [[ -n ${{ inputs.memory }} ]]; then
+        if [[ ${{ inputs.memory }} != '' ]]; then
           MEMORY_STRING="--memory ${{ inputs.memory }}"
         fi
 
