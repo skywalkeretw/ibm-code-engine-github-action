@@ -35,7 +35,7 @@ inputs:
   
   runtime:
     description: Runtime used for the Function only required for function
-    required: true
+    required: false
 
   build-source:
     description: path to the directory containing the source code 
