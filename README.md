@@ -18,6 +18,8 @@ This action allows you to deploy Apps, Functions, and Jobs to IBM Cloud Code Eng
 - `name` (required): The name of the App, Function, or Job.
 - `runtime` (required for Function): The runtime used for the Function. Currently supported `nodejs-18` and `python-3.11` see [IBM Code Engine Function Runtimes](https://cloud.ibm.com/docs/codeengine?topic=codeengine-fun-runtime) for more information.
 - `build-source` (optional, default: .): Path to the directory containing the source code.
+- `cpu` (optional): CPU value set for your entity [Config for Functions](https://cloud.ibm.com/docs/codeengine?topic=codeengine-fun-runtime), [Codeengine Memory CPU combo](https://cloud.ibm.com/docs/codeengine?topic=codeengine-mem-cpu-combo)
+- `memory` (optional): Memory value set for your entity [Config for Functions](https://cloud.ibm.com/docs/codeengine?topic=codeengine-fun-runtime), [Codeengine Memory CPU combo](https://cloud.ibm.com/docs/codeengine?topic=codeengine-mem-cpu-combo)
 
 
 
@@ -53,6 +55,8 @@ jobs:
         entity: 'app'
         name: 'my-qpp'
         build-source: './app'
+        cpu: 1
+        memory: 4G
 
   job:
     runs-on: ubuntu-latest
@@ -70,6 +74,8 @@ jobs:
         entity: 'job'
         name: 'my-job'
         build-source: './job'
+        cpu: 1
+        memory: 4G
 
   fn-js:
     runs-on: ubuntu-latest
@@ -88,6 +94,8 @@ jobs:
         runtime: nodejs-18 
         name: 'my-js-fn'
         build-source: './js-func'
+        cpu: 1
+        memory: 4G
 
   fn-py:
     runs-on: ubuntu-latest
@@ -106,6 +114,8 @@ jobs:
         runtime: python-3.11
         name: 'my-py-fn'
         build-source: './py-func'
+        cpu: 1
+        memory: 4G
 ```
 
 This action is not officially endorsed by IBM Cloud but can be used as a community-contributed GitHub Action.
