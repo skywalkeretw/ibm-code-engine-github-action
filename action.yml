@@ -11,7 +11,7 @@ inputs:
     description: IAM API Key used to log into the IBM Cloud
     required: true
 
-  resouce-groupe:
+  resource-group:
     description: An IBM Cloud Resource Group is a logical container used to organize and manage related cloud resources
     required: false
     default: Default
@@ -54,7 +54,7 @@ runs:
     
     - name: Login to IBM Cloud And target Resouce Groupe and Region
       shell: bash
-      run: ibmcloud login --apikey ${{ inputs.api-key }} -r ${{ inputs.region }} -g ${{ inputs.resouce-groupe }}
+      run: ibmcloud login --apikey ${{ inputs.api-key }} -r ${{ inputs.region }} -g ${{ inputs.resource-group }}
 
     - name: Install Code Engine Plugin
       shell: bash
