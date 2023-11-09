@@ -22,32 +22,90 @@ This action allows you to deploy Apps, Functions, and Jobs to IBM Cloud Code Eng
 
 
 ## Usage
-To use this action, add it to your GitHub Actions workflow YAML file. For example:
+To use this action, add it to your GitHub Actions workflow YAML file. 
+Has examples for Each function, app and job
+For example:
 
 ```yaml
-name: Deploy to Code Engine
+name: Depoly to Code Engine
+
 on:
   push:
     branches:
-      - main
+      - master
+      -
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    name: Deploy to Code Engine
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
 
-    - name: Deploy to Code Engine
+  app:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Deploy Application to Code Engine
       uses: skywalkeretw/ibm-code-engine-github-action@v1
       with:
-        api-key: ${{ secrets.IBM_CLOUD_API_KEY }}
-        region: 'us-south'
-        project: 'my-code-engine-project'
+        api-key: ${{ secrets.IBM_IAM_API_KEY }}
+        resource-group: 'Default'
+        region: 'eu-de'
+        project: 'MY-PROJECT'
         entity: 'app'
-        name: 'my-app-name'
-        build-source: 'path/to/source'
+        name: 'my-qpp'
+        build-source: './app'
+
+  job:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Deploy Job to Code Engine
+      uses: skywalkeretw/ibm-code-engine-github-action@v1
+      with:
+        api-key: ${{ secrets.IBM_IAM_API_KEY }}
+        resource-group: 'Default'
+        region: 'eu-de'
+        project: 'MY-PROJECT'
+        entity: 'job'
+        name: 'my-job'
+        build-source: './job'
+
+  fn-js:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Deploy JavaScript Function to Code Engine
+      uses: skywalkeretw/ibm-code-engine-github-action@v1
+      with:
+        api-key: ${{ secrets.IBM_IAM_API_KEY }}
+        resource-group: 'Default'
+        region: 'eu-de'
+        project: 'MY-PROJECT'
+        entity: 'fn'
+        runtime: nodejs-18 
+        name: 'my-js-fn'
+        build-source: './js-func'
+
+  fn-py:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Deploy Python Function to Code Engine
+      uses: skywalkeretw/ibm-code-engine-github-action@v1
+      with:
+        api-key: ${{ secrets.IBM_IAM_API_KEY }}
+        resource-group: 'Default'
+        region: 'eu-de'
+        project: 'MY-PROJECT'
+        entity: 'fn'
+        runtime: python-3.11
+        name: 'my-py-fn'
+        build-source: './py-func'
 ```
 
 This action is not officially endorsed by IBM Cloud but can be used as a community-contributed GitHub Action.
