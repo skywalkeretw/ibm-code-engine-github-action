@@ -104,7 +104,7 @@ runs:
       if: inputs.entity == 'job' 
       run: |
 
-        if ibmcloud ce job get --name ${{ inputs.name }} --wait ; then
+        if ibmcloud ce job get --name ${{ inputs.name }} ; then
           ibmcloud ce job update --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait
         else
           ibmcloud ce job create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait
