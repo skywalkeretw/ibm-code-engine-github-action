@@ -79,9 +79,9 @@ runs:
       run: |
 
         if ibmcloud ce fn get --name ${{ inputs.name }} ; then
-          ibmcloud ce fn update --name ${{ inputs.name }} --runtime ${{ inputs.runtime }} --build-source ${{ inputs.build-source }} ${{ steps.resources.outputs.cpu }} ${{ steps.resources.outputs.memory }}
+          ibmcloud ce fn update --name ${{ inputs.name }} --runtime ${{ inputs.runtime }} --build-source ${{ inputs.build-source }}
         else
-          ibmcloud ce fn create --name ${{ inputs.name }} --runtime ${{ inputs.runtime }} --build-source ${{ inputs.build-source }} ${{ steps.resources.outputs.cpu }} ${{ steps.resources.outputs.memory }}
+          ibmcloud ce fn create --name ${{ inputs.name }} --runtime ${{ inputs.runtime }} --build-source ${{ inputs.build-source }}
         fi
 
     # Application Steps
@@ -92,9 +92,9 @@ runs:
       run: |
 
         if ibmcloud ce application get --name ${{ inputs.name }} ; then
-          ibmcloud ce application update --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} ${{ steps.resources.outputs.cpu }} ${{ steps.resources.outputs.memory }}
+          ibmcloud ce application update --name ${{ inputs.name }} --build-source ${{ inputs.build-source }}
         else
-          ibmcloud ce application create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} ${{ steps.resources.outputs.cpu }} ${{ steps.resources.outputs.memory }}
+          ibmcloud ce application create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }}
         fi
 
     # Job Steps
@@ -105,9 +105,9 @@ runs:
       run: |
 
         if ibmcloud ce job get --name ${{ inputs.name }} --wait ; then
-          ibmcloud ce job update --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait ${{ steps.resources.outputs.cpu }} ${{ steps.resources.outputs.memory }}
+          ibmcloud ce job update --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait
         else
-          ibmcloud ce job create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait ${{ steps.resources.outputs.cpu }} ${{ steps.resources.outputs.memory }}
+          ibmcloud ce job create --name ${{ inputs.name }} --build-source ${{ inputs.build-source }} --wait
         fi
     
     - name: Get entity 
