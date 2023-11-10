@@ -10,16 +10,19 @@ This action allows you to deploy Apps, Functions, and Jobs to IBM Cloud Code Eng
 
 ### Inputs
 
-- `api-key` (required): IAM API Key used to log into the IBM Cloud. Please store your IBM Cloud API key securely in your GitHub repository secrets.
-- `resouce-groupe` (optional, default: Default): An IBM Cloud Resource Group, a logical container for organizing and managing related cloud resources.
-- `region` (required): The geographical area where your Code Engine project is located.
-- `project` (required): A Code Engine Project, grouping your Apps, Functions, and Jobs.
-- `entity` (required): The type of entity to deploy (App, Function, Job).
-- `name` (required): The name of the App, Function, or Job.
-- `runtime` (required for Function): The runtime used for the Function. Currently supported `nodejs-18` and `python-3.11` see [IBM Code Engine Function Runtimes](https://cloud.ibm.com/docs/codeengine?topic=codeengine-fun-runtime) for more information.
-- `build-source` (optional, default: .): Path to the directory containing the source code.
-- `cpu` (optional): CPU value set for your entity [Config for Functions](https://cloud.ibm.com/docs/codeengine?topic=codeengine-fun-runtime), [Codeengine Memory CPU combo](https://cloud.ibm.com/docs/codeengine?topic=codeengine-mem-cpu-combo)
-- `memory` (optional): Memory value set for your entity [Config for Functions](https://cloud.ibm.com/docs/codeengine?topic=codeengine-fun-runtime), [Codeengine Memory CPU combo](https://cloud.ibm.com/docs/codeengine?topic=codeengine-mem-cpu-combo)
+| Name            | Required | Default Value |Description |
+|-----------------|----------|---------------|----------------------------------------------------------------|
+| `api-key`       | ✅      | -             | IAM API Key used to log into the IBM Cloud. Please store your IBM Cloud API key securely in your GitHub repository Secrets.|
+| `resource-group`| ❌       | Default       | An IBM Cloud Resource Group, a logical container for organizing and managing related cloud resources.|
+| `region`        | ✅      | -             | The geographical area where your Code Engine project is located.|
+| `project`       | ✅      | -             | A Code Engine Project, grouping your Apps, Functions, and Jobs.|
+| `entity`        | ✅      | -             | The type of entity to deploy (App, Function, Job). |
+| `name`          | ✅      | -             | The name of the App, Function, or Job.|
+| `runtime`       | ❌ | -             | The runtime used for the Function. Currently supported `nodejs-18` and `python-3.11` see [IBM Code Engine Function Runtimes](https://cloud.ibm.com/docs/codeengine?topic=codeengine-fun-runtime) for more information.|
+| `build-source`  | ❌       | .             | Path to the directory containing the source code.|
+| `cpu`           | ❌       | -             | CPU value set for your entity [Config for Functions](https://cloud.ibm.com/docs/codeengine?topic=codeengine-fun-runtime), [Codeengine Memory CPU combo](https://cloud.ibm.com/docs/codeengine?topic=codeengine-mem-cpu-combo)|
+| `memory`        | ❌       | -             | Memory value set for your entity [Config for Functions](https://cloud.ibm.com/docs/codeengine?topic=codeengine-fun-runtime), [Codeengine Memory CPU combo](https://cloud.ibm.com/docs/codeengine?topic=codeengine-mem-cpu-combo)|
+
 
 
 
